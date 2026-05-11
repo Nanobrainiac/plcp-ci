@@ -1,7 +1,7 @@
 import { supabase } from '../utils/supabase.js';
 
 const base = import.meta.env.VITE_API_BASE_URL || '';
-const directSupabase = !base && (import.meta.env.PROD || (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io')));
+const directSupabase = !base && typeof window !== 'undefined' && window.location.hostname.endsWith('github.io');
 
 async function request(path, options = {}) {
   const response = await fetch(`${base}${path}`, {
