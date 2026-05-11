@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabase.js';
+import { requireSupabase } from '../utils/supabase.js';
 
 const base = import.meta.env.VITE_API_BASE_URL || '';
 const directSupabase = !base && typeof window !== 'undefined' && window.location.hostname.endsWith('github.io');
@@ -17,7 +17,7 @@ async function request(path, options = {}) {
 }
 
 async function selectRows(table, query = '*') {
-  const { data, error } = await supabase.from(table).select(query).order('created_at', { ascending: false });
+  const { data, error } = await requireSupabase().from(table).select(query).order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
   return data || [];
 }
@@ -40,7 +40,7 @@ async function listCompetitors(params = '') {
 }
 
 async function getCompetitor(id) {
-  const { data, error } = await supabase.from('competitors').select('*').eq('id', id).single();
+  const { data, error } = await requireSupabase().from('competitors').select('*').eq('id', id).single();
   if (error) throw new Error(error.message);
   const intelligence = await listIntelligence(`?competitor_id=${encodeURIComponent(id)}`);
   const swots = await optionalRows('swot_analyses');
@@ -68,7 +68,7 @@ async function createCompetitor(data) {
     tags: cleanTags(data.tags),
     updated_at: new Date().toISOString()
   };
-  const { data: saved, error } = await supabase.from('competitors').insert(row).select().single();
+  const { data: saved, error } = await requireSupabase().from('competitors').insert(row).select().single();
   if (error) throw new Error(error.message);
   return saved;
 }
@@ -87,13 +87,13 @@ async function updateCompetitor(id, data) {
     tags: cleanTags(data.tags),
     updated_at: new Date().toISOString()
   };
-  const { data: saved, error } = await supabase.from('competitors').update(row).eq('id', id).select().single();
+  const { data: saved, error } = await requireSupabase().from('competitors').update(row).eq('id', id).select().single();
   if (error) throw new Error(error.message);
   return saved;
 }
 
 async function deleteCompetitor(id) {
-  const { error } = await supabase.from('competitors').delete().eq('id', id);
+  const { error } = await requireSupabase().from('competitors').delete().eq('id', id);
   if (error) throw new Error(error.message);
   return null;
 }
@@ -113,7 +113,7 @@ async function listIntelligence(params = '') {
 }
 
 async function getIntelligence(id) {
-  const { data, error } = await supabase.from('intelligence_items').select('*').eq('id', id).single();
+  const { data, error } = await requireSupabase().from('intelligence_items').select('*').eq('id', id).single();
   if (error) throw new Error(error.message);
   const summaries = await optionalRows('ai_summaries');
   return {
@@ -133,7 +133,7 @@ async function createIntelligence(data) {
     tags: cleanTags(data.tags),
     competitor_id: data.competitor_id || null
   };
-  const { data: saved, error } = await supabase.from('intelligence_items').insert(row).select().single();
+  const { data: saved, error } = await requireSupabase().from('intelligence_items').insert(row).select().single();
   if (error) throw new Error(error.message);
   return saved;
 }
@@ -211,7 +211,7 @@ async function updatePlcpProfile(data) {
     strategic_goals: cleanTags(data.strategic_goals),
     updated_at: new Date().toISOString()
   };
-  const { data: saved, error } = await supabase.from('plcp_profile').upsert(row).select().single();
+  const { data: saved, error } = await requireSupabase().from('plcp_profile').upsert(row).select().single();
   if (error) throw new Error(error.message);
   return saved;
 }
