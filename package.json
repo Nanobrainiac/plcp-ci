@@ -10,7 +10,10 @@
     "client": "npm run dev --prefix client",
 
     "build": "npm run build --prefix client",
-    "predeploy": "npm run build",
+    "start": "npm start --prefix server",
+    "heroku-postbuild": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "build:pages": "npm run build --prefix client -- --base=/plcp-ci/",
+    "predeploy": "npm run build:pages",
     "deploy": "gh-pages -d client/dist"
   },
   "devDependencies": {
